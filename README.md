@@ -1,96 +1,95 @@
 # Dataset Harmonizer POC
 
-Die Dataset Harmonizer Proof-of-Concept (POC) demonstriert ein flexibles Tool, um chaotische Bilddatensätze zu bereinigen und für weitere Verarbeitung vorzubereiten. Das Projekt vereint eine bedienfreundliche Weboberfläche mit einem Kommandozeilen-Interface für Power-User.
+The Dataset Harmonizer proof of concept demonstrates a flexible tool for cleaning and preparing chaotic image datasets. It combines an intuitive web interface with a command line interface for power users.
 
-## Funktionen
+## Features
 
-- **Integritätscheck** – überprüft, ob Bilder gelesen werden können
-- **Format-Harmonisierung** – konvertiert alle Bilder in ein einheitliches Format (z. B. PNG)
-- **Auto-Resize (optional)** – setzt die kürzere Seite jedes Bildes auf 512 px, behält das Seitenverhältnis bei
-- **Padding (optional)** – erzeugt quadratische Ausgaben
-- **Einheitliche Namensgebung** – speichert Dateien als `datasetnameXXXX.format`
-- **Fehler-Handling** – loggt alle Probleme, ohne Daten zu verlieren
-- **Web-Interface** – komfortabler Upload, Konfiguration und Fortschrittsanzeige
+- **Integrity check** – verifies that images can be read
+- **Format harmonization** – converts all images to a single format (e.g. PNG)
+- **Auto-resize (optional)** – scales the shortest side of each image to 512 px while preserving the aspect ratio
+- **Padding (optional)** – creates square outputs
+- **Unified naming** – files saved as `datasetnameXXXX.format`
+- **Error handling** – logs issues without losing data
+- **Web interface** – convenient upload, configuration and progress display
 
-## Projektübersicht
+## Project Overview
 
 ```
 dataset-harmonizer/
 │
 ├── harmonizer/
-│   └── dataset_harmonizer.py   # Python Harmonizer
+│   └── dataset_harmonizer.py   # Python harmonizer
 │
 ├── webserver/
-│   ├── server.js               # Node.js Webserver
-│   ├── routes/                 # API Endpunkte
+│   ├── server.js               # Node.js web server
+│   ├── routes/                 # API endpoints
 │   └── public/                 # Frontend (HTML, CSS, JS)
 │
-├── uploads/                    # Upload-Verzeichnis (temporär)
-├── outputs/                    # Harmonisierte Datensätze
-├── logs/                       # Log-Dateien
-└── README.md                   # Dokumentation
+├── uploads/                    # Temporary upload directory
+├── outputs/                    # Harmonized datasets
+├── logs/                       # Log files
+└── README.md                   # Documentation
 ```
 
-## Parameter (CLI & Web)
+## Parameters (CLI & Web)
 
-| Name                | Typ                        | Beschreibung                     |
-| ------------------- | -------------------------- | -------------------------------- |
-| `input_dir`         | String                     | Eingangsordner                   |
-| `output_dir`        | String                     | Zielordner                       |
-| `dataset_name`      | String                     | Namenspräfix                    |
-| `output_format`     | String                     | Ziel-Format                      |
-| `image_size`        | Tuple[int, int], optional  | Feste Größe                    |
-| `auto_resize`       | Bool                       | Aktiviert per-Bild Resize        |
-| `target_short_side` | Int                        | Kürzere Seite (Standard 512)    |
-| `padding`           | Bool                       | Quadratisches Padding            |
+| Name                | Type                       | Description                                   |
+| ------------------- | -------------------------- | --------------------------------------------- |
+| `input_dir`         | String                     | Input directory                               |
+| `output_dir`        | String                     | Target directory                              |
+| `dataset_name`      | String                     | Name prefix                                   |
+| `output_format`     | String                     | Output format                                 |
+| `image_size`        | Tuple[int, int], optional  | Fixed size                                    |
+| `auto_resize`       | Bool                       | Enable per-image resize                       |
+| `target_short_side` | Int                        | Short side length (default 512)               |
+| `padding`           | Bool                       | Add square padding                            |
 
 ## CLI Workflow
 
-1. Aufruf von `dataset_harmonizer.py` mit den gewünschten Parametern
-2. Integritätscheck der Eingangsdaten
-3. Verarbeitung (Resize, Auto-Resize, Padding)
-4. Fortschritt via `tqdm`
-5. Fehlerprotokolle werden unter `logs/` gespeichert
-6. Abschlussbericht wird ausgegeben
+1. Run `dataset_harmonizer.py` with the desired parameters.
+2. Perform an integrity check on the input data.
+3. Process the images (resize, auto-resize, padding).
+4. Display progress via `tqdm`.
+5. Store logs under `logs/`.
+6. Output a final report.
 
 ## Web Workflow
 
 **Frontend**
 
-- Drag-&-Drop-Upload von ZIP-Dateien
-- Formular zur Parameterkonfiguration
-- Live-Fortschrittsanzeige über WebSocket oder Server-Sent Events (SSE)
-- Anzeige von Fehlern und Erfolgsbericht
-- Download-Link für das Ergebnis
+- Drag-and-drop ZIP upload
+- Parameter configuration form
+- Live progress via WebSocket or Server-Sent Events (SSE)
+- Display errors and success report
+- Download link for the result
 
 **Backend (Node.js)**
 
-1. Entgegennahme und Entpacken des ZIP-Uploads
-2. Aufruf des Python-Harmonizers mit den angegebenen Parametern
-3. Weitergabe des Fortschritts an den Browser
-4. Bereitstellung des harmonisierten Datensatzes und der Protokolle
+1. Receive and extract the ZIP upload.
+2. Invoke the Python harmonizer with the chosen parameters.
+3. Forward progress to the browser.
+4. Provide the harmonized dataset and logs.
 
-## Technologien
+## Technologies
 
-| Bereich    | Tech                        |
+| Area       | Tech                        |
 | ---------- | --------------------------- |
 | Harmonizer | Python 3.8+, Pillow, tqdm   |
-| Webserver  | Node.js, Express, multer    |
+| Web server | Node.js, Express, multer    |
 | Frontend   | HTML, CSS, JavaScript       |
 
-## Fehlerbehandlung
+## Error Handling
 
-- **Integritätsfehler**: `integrity_check_log.txt`
-- **Verarbeitungsfehler**: `error_log.txt`
-- **Webserver-Fehler**: HTTP-Statuscodes mit JSON-Antworten
+- **Integrity errors:** `integrity_check_log.txt`
+- **Processing errors:** `error_log.txt`
+- **Web server errors:** HTTP status codes with JSON responses
 
-## Kompatibilität
+## Compatibility
 
-- **Betriebssysteme**: Windows, Linux, macOS
-- **Browser**: Chrome, Firefox, Edge, Safari
+- **Operating systems:** Windows, Linux, macOS
+- **Browser:** Chrome, Firefox, Edge, Safari
 
-## Zusatzoptionen
+## Additional Options
 
-- **Dry-Run-Modus** – Testlauf ohne echte Verarbeitung
-- **Multi-Threading** (geplant)
-
+- **Dry-run mode** – test run without modifying data
+- **Multi-threading** (planned)
