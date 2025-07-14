@@ -1,136 +1,136 @@
-# **AGENTS.md – Dataset Harmonizer mit Webinterface**
+# AGENTS.md – Dataset Harmonizer with Web Interface
 
-## **Ziel**
+## Goal
 
-Ein flexibles Tool zur Harmonisierung chaotischer Bilddatensätze mit:
+A flexible tool for harmonizing chaotic image datasets featuring:
 
-* **CLI-Modus** für Power-User
-* **Webinterface** für komfortable visuelle Nutzung
-
----
-
-## **Hauptfunktionen**
-
-| Funktion                      | Beschreibung                                                       |
-| ----------------------------- | ------------------------------------------------------------------ |
-| **Integritätscheck**          | Prüft, ob Bilder lesbar sind                                       |
-| **Format-Harmonisierung**     | Einheitliches Bildformat (z. B. PNG)                               |
-| **Auto-Resize (optional)**    | Kürzere Seite wird auf 512px gesetzt, Aspect-Ratio bleibt erhalten |
-| **Padding (optional)**        | Quadratische Ausgabe                                               |
-| **Einheitliche Namensgebung** | `datasetnameXXXX.format`                                           |
-| **Fehler-Handling**           | Kein Datenverlust, Fehler werden geloggt                           |
-| **Web-Interface**             | Upload, Konfiguration, Fortschrittsanzeige                         |
+* **CLI mode** for power users
+* **Web interface** for convenient visual control
 
 ---
 
-## **Projektstruktur**
+## Key Features
+
+| Feature                    | Description                                                  |
+| -------------------------- | ------------------------------------------------------------ |
+| **Integrity check**        | Validate that images can be read                             |
+| **Format harmonization**   | Convert images to a single format (e.g. PNG)                 |
+| **Auto-resize (optional)** | Short edge resized to 512 px while maintaining aspect ratio  |
+| **Padding (optional)**     | Produce square outputs                                       |
+| **Unified naming**         | `datasetnameXXXX.format`                                     |
+| **Error handling**         | No data loss, all errors logged                              |
+| **Web interface**          | Upload, configuration, and progress display                  |
+
+---
+
+## Project Structure
 
 ```
 dataset-harmonizer/
 │
 ├── harmonizer/
-│   └── dataset_harmonizer.py   # Python Harmonizer
+│   └── dataset_harmonizer.py   # Python harmonizer
 │
 ├── webserver/
-│   ├── server.js               # Node.js Webserver
-│   ├── routes/                 # API Endpunkte
+│   ├── server.js               # Node.js web server
+│   ├── routes/                 # API endpoints
 │   └── public/                 # Frontend (HTML, CSS, JS)
 │
-├── uploads/                    # Upload-Verzeichnis (temporär)
-├── outputs/                    # Harmonisierte Datensätze
-├── logs/                       # Log-Dateien
-└── README.md                   # Dokumentation
+├── uploads/                    # Temporary upload folder
+├── outputs/                    # Harmonized datasets
+├── logs/                       # Log files
+└── README.md                   # Documentation
 ```
 
 ---
 
-## **Parameter (CLI & Web)**
+## Parameters (CLI & Web)
 
-| Name                | Typ                        | Beschreibung                               |
-| ------------------- | -------------------------- | ------------------------------------------ |
-| `input_dir`         | String                     | Eingangsordner                             |
-| `output_dir`        | String                     | Zielordner                                 |
-| `dataset_name`      | String                     | Namenspräfix                               |
-| `output_format`     | String                     | Ziel-Format                                |
-| `image_size`        | Tuple\[int, int], optional | Feste Größe                                |
-| `auto_resize`       | Bool                       | Aktiviert per-Bild Resize                  |
-| `target_short_side` | Int                        | Kürze Seite auf diesen Wert (Default: 512) |
-| `padding`           | Bool                       | Padding auf quadratisches Format           |
-
----
-
-## **CLI Workflow**
-
-1. Starte `dataset_harmonizer.py` mit Parametern.
-2. Integritätscheck wird durchgeführt.
-3. Verarbeitung beginnt:
-
-   * Fester Resize **oder**
-   * Auto-Resize mit Aspect-Ratio
-   * Optional Padding
-4. Fortschritt via `tqdm`
-5. Fehler werden in `logs/` dokumentiert.
-6. Abschlussbericht wird ausgegeben.
+| Name                | Type                      | Description                                   |
+| ------------------- | ------------------------- | --------------------------------------------- |
+| `input_dir`         | String                    | Input folder                                  |
+| `output_dir`        | String                    | Target folder                                 |
+| `dataset_name`      | String                    | Name prefix                                   |
+| `output_format`     | String                    | Target format                                 |
+| `image_size`        | Tuple[int, int], optional | Fixed size                                    |
+| `auto_resize`       | Bool                      | Enable per-image resize                       |
+| `target_short_side` | Int                       | Short side length (default: 512)              |
+| `padding`           | Bool                      | Square padding                                |
 
 ---
 
-## **Web Workflow**
+## CLI Workflow
 
-### **Frontend (Browser)**
+1. Run `dataset_harmonizer.py` with parameters.
+2. Perform the integrity check.
+3. Start processing:
 
-* Drag & Drop ZIP Upload
-* Parameter-Konfiguration per Formular
-* Fortschrittsanzeige via WebSocket / SSE
-* Anzeige von Fehlerlogs und Erfolgsbericht
-* Download-Link für das Ergebnis-Dataset
-
----
-
-### **Backend (Node.js)**
-
-1. **Datei-Upload:**
-
-   * ZIP wird angenommen
-   * Entpacken nach `uploads/`
-2. **API-Aufruf:**
-
-   * Übergibt Parameter an Python-Tool via `child_process.spawn`
-3. **Live-Status:**
-
-   * Fortschritt via WebSocket / SSE an den Browser senden
-4. **Ergebnisbereitstellung:**
-
-   * Harmonisiertes Dataset als Download anbieten
-   * Logs anzeigen & bereitstellen
+   * Fixed resize **or**
+   * Auto-resize while keeping aspect ratio
+   * Optional padding
+4. Show progress via `tqdm`.
+5. Log errors to `logs/`.
+6. Output a final report.
 
 ---
 
-## **Technologien**
+## Web Workflow
 
-| Bereich    | Tech                                                            |
-| ---------- | --------------------------------------------------------------- |
-| Harmonizer | Python 3.8+, Pillow, tqdm, argparse, logging                    |
-| Webserver  | Node.js, Express, multer, WebSocket/SSE                         |
-| Frontend   | HTML, CSS, JS (vanilla oder leichtgewichtig mit React optional) |
+### Frontend (Browser)
 
----
-
-## **Fehlerhandling**
-
-* **Integritätsfehler:** `integrity_check_log.txt`
-* **Verarbeitungsfehler:** `error_log.txt`
-* **Webserver-Fehler:** Standard HTTP Fehlerbehandlung mit JSON-Response
+* Drag & drop ZIP upload
+* Configure parameters via form
+* Progress display using WebSocket/SSE
+* Show error logs and success report
+* Download link for the resulting dataset
 
 ---
 
-## **Kompatibilität**
+### Backend (Node.js)
 
-* **OS:** Windows, Linux, MacOS
+1. **File upload:**
+
+   * Accept ZIP archive
+   * Unpack to `uploads/`
+2. **API call:**
+
+   * Pass parameters to the Python tool via `child_process.spawn`
+3. **Live status:**
+
+   * Send progress to the browser via WebSocket/SSE
+4. **Provide results:**
+
+   * Offer the harmonized dataset for download
+   * Show and provide logs
+
+---
+
+## Technologies
+
+| Area       | Tech                                                         |
+| ---------- | ------------------------------------------------------------ |
+| Harmonizer | Python 3.8+, Pillow, tqdm, argparse, logging                 |
+| Web server | Node.js, Express, multer, WebSocket/SSE                      |
+| Frontend   | HTML, CSS, JS (vanilla or lightweight React optional)        |
+
+---
+
+## Error Handling
+
+* **Integrity errors:** `integrity_check_log.txt`
+* **Processing errors:** `error_log.txt`
+* **Web server errors:** Standard HTTP error handling with JSON response
+
+---
+
+## Compatibility
+
+* **OS:** Windows, Linux, macOS
 * **Browser:** Chrome, Firefox, Edge, Safari
 
 ---
 
-## **Zusatzoptionen**
+## Additional Options
 
-* **Dry-Run Modus**
-* **Multi-Threading (optional später ergänzbar)**
+* **Dry-run mode**
+* **Multi-threading** (can be added later)
