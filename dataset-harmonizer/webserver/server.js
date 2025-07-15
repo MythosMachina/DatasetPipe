@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const AdmZip = require('adm-zip');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid');
 const routes = require('./routes');
@@ -32,9 +33,13 @@ app.post('/upload', upload.single('dataset'), (req, res) => {
   req.session.userId = userId;
 
   const jobId = uuidv4();
-  const datasetName = req.file.originalname;
-  const targetPath = path.join(uploadsDir, datasetName);
-  fs.renameSync(req.file.path, targetPath);
+  const datasetName = path.parse(req.file.originalname).name;
+  const extractDir = path.join(uploadsDir, datasetName);
+  fs.mkdirSync(extractDir, { recursive: true });
+
+  const zip = new AdmZip(req.file.path);
+  zip.extractAllTo(extractDir, true);
+  fs.unlinkSync(req.file.path);
   uploadedDatasets.push(datasetName);
 
   const args = [
