@@ -111,3 +111,16 @@ When the server boots, the orchestrator automatically builds the necessary Docke
 
 - **Dry-run mode** – test run without modifying data
 - **Multi-threading** (planned)
+
+## Dataset Pipe Roadmap
+
+Example Dockerfiles for each processing step are provided under `dataset-pipe/`:
+
+1. Frame Extraction
+2. Deduplication
+3. Filtering
+4. Upscaling & QC
+5. Cropping
+6. Annotation
+7. Character Classification
+8. Packaging
