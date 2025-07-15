@@ -23,6 +23,15 @@ pipeline under `pipeline/`.  The code was adapted from the
 `Pipeline` runner.  It mirrors the eight stages listed above and can be
 used without Docker for quick experiments.
 
+`python -m dataset_pipe.pipeline.run_pipeline` offers a small CLI wrapper that
+prints progress messages when the `PROGRESS` environment variable is set.
+You can process either a video or a folder of images:
+
+```
+python -m dataset_pipe.pipeline.run_pipeline --video input.mp4 output_dir
+python -m dataset_pipe.pipeline.run_pipeline --images images/ output_dir
+```
+
 Example usage:
 
 ```python
@@ -33,7 +42,7 @@ pipe = Pipeline(
     output_dir=Path('output'),
     work_dir=Path('work')
 )
-pipe.run(Path('video.mp4'))
+pipe.run(Path('video.mp4'))  # or pipe.run(None, images_dir=Path('images'))
 ```
 
 See the individual modules under `pipeline/steps/` for details.

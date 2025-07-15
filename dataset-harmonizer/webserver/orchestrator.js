@@ -11,7 +11,8 @@ class Orchestrator extends EventEmitter {
 
   initialize() {
     // Build worker image on startup
-    this.runCommand('docker', ['build', '-t', 'dataset-worker', path.join(__dirname, '..', 'harmonizer')]);
+    const workerDir = path.join(__dirname, '..', '..', 'dataset_pipe');
+    this.runCommand('docker', ['build', '-t', 'dataset-worker', workerDir]);
   }
 
   startJob(userId, jobId, datasetName, params) {
