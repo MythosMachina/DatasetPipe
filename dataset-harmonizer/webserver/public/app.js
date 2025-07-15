@@ -12,7 +12,12 @@ async function refreshLists() {
   uploadedList.innerHTML = '';
   data.uploaded.forEach(name => {
     const li = document.createElement('li');
-    li.innerHTML = `<label><input type="checkbox" value="${name}"> ${name}</label>`;
+    const btn = document.createElement('button');
+    btn.textContent = 'Start';
+    btn.dataset.name = name;
+    btn.addEventListener('click', () => startJob(name));
+    li.textContent = name + ' ';
+    li.appendChild(btn);
     uploadedList.appendChild(li);
   });
   finishedList.innerHTML = '';
@@ -28,15 +33,24 @@ window.addEventListener('load', refreshLists);
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(form);
+  await fetch('/upload', { method: 'POST', body: formData });
+  form.reset();
+  refreshLists();
+});
+
+async function startJob(name) {
   progressSection.classList.remove('hidden');
   bar.style.width = '0%';
-  statusText.textContent = 'Uploading...';
+  statusText.textContent = 'Starting...';
   log.textContent = '';
-
-  const res = await fetch('/upload', { method: 'POST', body: formData });
+  const res = await fetch('/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
   const data = await res.json();
   listenProgress(data.jobId);
-});
+}
 
 function listenProgress(jobId) {
   const source = new EventSource(`/progress/${jobId}`);

@@ -13,25 +13,13 @@
       <ul id="uploaded-list"></ul>
     </div>
     <div class="main container">
-      <h1>Dataset Harmonizer</h1>
+      <h1>Dataset Pipeline</h1>
       <form id="upload-form">
       <div class="form-group">
-        <label for="dataset">Dataset ZIP</label>
+        <label for="dataset">Dataset File (video or zip)</label>
         <input type="file" id="dataset" name="dataset" required>
       </div>
-      <div class="form-group">
-        <label for="output_format">Output Format</label>
-        <select id="output_format" name="output_format">
-          <option value="png">PNG</option>
-          <option value="jpg">JPG</option>
-          <option value="webp">WEBP</option>
-        </select>
-      </div>
-      <div class="form-group inline">
-        <label><input type="checkbox" id="auto_resize" name="auto_resize"> Auto Resize</label>
-        <label><input type="checkbox" id="padding" name="padding"> Padding</label>
-      </div>
-      <button type="submit">Start Harmonization</button>
+      <button type="submit">Upload</button>
       </form>
       <div id="progress" class="hidden">
         <div class="progress-bar"><div class="bar" id="bar"></div></div>

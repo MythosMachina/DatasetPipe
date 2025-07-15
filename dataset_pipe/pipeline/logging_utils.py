@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -34,13 +35,20 @@ logger.addHandler(handler)
 logger.propagate = False
 
 
+PROGRESS_ENV = os.getenv("PROGRESS")
+
+
 def log_step(step: str) -> None:
     logger.dsk(step)
+    if PROGRESS_ENV:
+        print(step, flush=True)
 
 
 def log_progress(prefix: str, count: int, total: int) -> None:
     """Log a progress message of the form ``'<prefix> count/total'``."""
     logger.dsk(f"{prefix} {count}/{total}")
+    if PROGRESS_ENV:
+        print(f"PROGRESS {count} {total}", flush=True)
 
 
 def rotate_log(job_name: str) -> None:

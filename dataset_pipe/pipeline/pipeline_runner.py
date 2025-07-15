@@ -51,8 +51,9 @@ class Pipeline:
 
     def run(
         self,
-        video_path: Path,
+        video_path: Path | None = None,
         *,
+        images_dir: Path | None = None,
         trigger_word: str = "name",
         progress_cb: Callable[[int, str], None] | None = None,
         fps: int = 1,
@@ -70,12 +71,15 @@ class Pipeline:
         skip_annotation: bool = False,
         skip_classification: bool = False,
     ):
-        """Execute the full pipeline on ``video_path``.
+        """Execute the full pipeline.
 
         Parameters
         ----------
         video_path:
-            Input video file to process.
+            Optional input video file to process.
+        images_dir:
+            Optional directory with images. When provided, the frame
+            extraction step is skipped.
         trigger_word:
             Tag to prepend to every caption. Defaults to ``"name"``.
         fps:
@@ -113,12 +117,18 @@ class Pipeline:
                 shutil.rmtree(self.work_dir)
             self.output_dir.mkdir(parents=True, exist_ok=True)
 
-            # Frame Extraction is mandatory
-            if progress_cb:
-                progress_cb(1, 'Frame Extraction')
-            work_frames = self.work_dir / 'frames'
-            frames = frame_extraction.run(video_path, work_frames, fps=fps)
-            current = frames
+            if images_dir is not None:
+                if progress_cb:
+                    progress_cb(1, 'Frame Extraction (skipped)')
+                current = images_dir
+            else:
+                if video_path is None:
+                    raise ValueError('Either video_path or images_dir must be provided')
+                if progress_cb:
+                    progress_cb(1, 'Frame Extraction')
+                work_frames = self.work_dir / 'frames'
+                frames = frame_extraction.run(video_path, work_frames, fps=fps)
+                current = frames
 
             # Deduplication
             work_dedup = self.work_dir / 'dedup'

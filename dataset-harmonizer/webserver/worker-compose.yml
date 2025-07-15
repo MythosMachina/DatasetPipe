@@ -8,4 +8,4 @@ services:
       - ../logs:/logs
     environment:
       - PROGRESS=1
-    command: ["python", "/app/dataset_harmonizer.py"]
+    command: ["python", "-m", "dataset_pipe.pipeline.run_pipeline"]
