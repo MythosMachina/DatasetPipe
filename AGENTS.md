@@ -44,9 +44,19 @@ dataset-harmonizer/
 
 ## Components
 
-1. **Backend** – server, folder structure, API
-2. **Worker** – image processing pipeline
-3. **Frontend** – web interface, archive handling, up/download processing
+1. **Backend** – Node.js server on bare metal with API and user management
+2. **Worker** – Python pipeline in Docker, spawned per session
+3. **Frontend** – Web interface served from a Docker container
+4. **Container orchestrator** – spawns and cleans up worker containers
+
+---
+
+## Deployment Architecture
+
+* The **Node.js backend** runs directly on the host and manages user accounts.
+* The **web server** and **frontend** live in a Docker container.
+* Each job spawns a dedicated **worker container**, ensuring per-session isolation.
+* The orchestrator removes containers when processing completes.
 
 ---
 
@@ -94,6 +104,9 @@ dataset-harmonizer/
 
 ### Backend (Node.js)
 
+0. **User management:**
+
+   * Authenticate users and maintain sessions
 1. **File upload:**
 
    * Accept ZIP archive
