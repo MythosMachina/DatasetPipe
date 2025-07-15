@@ -42,6 +42,12 @@ dataset-harmonizer/
 └── README.md                   # Documentation
 ```
 
+## Components
+
+1. **Backend** – server, folder structure, API
+2. **Worker** – image processing pipeline
+3. **Frontend** – web interface, archive handling, up/download processing
+
 ---
 
 ## Parameters (CLI & Web)
