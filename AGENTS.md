@@ -167,3 +167,17 @@ This arrangement lets multiple users run jobs in parallel without interference.
 
 * **Dry-run mode**
 * **Multi-threading** (can be added later)
+
+## Dataset Pipe Roadmap
+
+The following steps are planned as part of the future Dataset Pipe. Each step will run inside its own dedicated Docker container:
+
+1. **Frame Extraction** – `ffmpeg` grabs frames from the video.
+2. **Deduplication** – perceptual hashing removes near duplicates.
+3. **Filtering** – flatten folders and drop unwanted shots.
+4. **Upscaling & QC** – RealESRGAN or PIL resize with blur/dark checks.
+5. **Cropping** – detects faces via YOLOv8, mediapipe or animeface.
+6. **Annotation** – WD14 tagger creates captions.
+7. **Character Classification** – groups images by hair/eye color, length and glasses.
+8. **Packaging** – outputs images and captions zipped for download.
+
