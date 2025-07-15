@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dataset Harmonizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Dataset Harmonizer</h1>
+    <form id="upload-form">
+      <div class="form-group">
+        <label for="dataset">Dataset ZIP</label>
+        <input type="file" id="dataset" name="dataset" required>
+      </div>
+      <div class="form-group">
+        <label for="output_format">Output Format</label>
+        <select id="output_format" name="output_format">
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+          <option value="webp">WEBP</option>
+        </select>
+      </div>
+      <div class="form-group inline">
+        <label><input type="checkbox" id="auto_resize" name="auto_resize"> Auto Resize</label>
+        <label><input type="checkbox" id="padding" name="padding"> Padding</label>
+      </div>
+      <button type="submit">Start Harmonization</button>
+    </form>
+    <div id="progress" class="hidden">
+      <div class="progress-bar"><div class="bar" id="bar"></div></div>
+      <p id="status">Waiting...</p>
+    </div>
+  </div>
+<script src="app.js"></script>
+</body>
+</html>
