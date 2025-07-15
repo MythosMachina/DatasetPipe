@@ -65,7 +65,13 @@ def main():
 
     logging.info("Processing %d images from %s to %s", len(images), input_path, output_path)
 
-    for idx, img_path in enumerate(tqdm(images, desc="harmonizing"), start=1):
+    progress_env = os.getenv("PROGRESS")
+
+    iterator = enumerate(images, start=1)
+    if not progress_env:
+        iterator = enumerate(tqdm(images, desc="harmonizing"), start=1)
+
+    for idx, img_path in iterator:
         try:
             with Image.open(img_path) as im:
                 im.load()
@@ -87,6 +93,9 @@ def main():
                 im.convert("RGB").save(out_file, format=args.output_format.upper())
         except Exception as exc:  # pylint: disable=broad-except
             logging.error("Failed processing %s: %s", img_path, exc)
+
+        if progress_env:
+            print(f"PROGRESS {idx} {len(images)}", flush=True)
 
     logging.info("Finished processing %d images", len(images))
     print(f"Processed {len(images)} images. Logs at {log_dir}")

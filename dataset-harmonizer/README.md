@@ -8,7 +8,7 @@ This directory contains the initial structure for the Dataset Harmonizer proof o
 - **outputs/** – Harmonized datasets
 - **logs/** – Processing logs
 
-The orchestrator builds the worker image on startup and spawns a Docker container for each job.
+The orchestrator builds the worker image on startup and spawns a Docker container for each job. A small web UI provides a dark layout with orange accents and shows progress during processing.
 
 ## Harmonizer Script
 

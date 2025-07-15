@@ -1,8 +1,10 @@
 const { spawn } = require('child_process');
 const path = require('path');
+const EventEmitter = require('events');
 
-class Orchestrator {
+class Orchestrator extends EventEmitter {
   constructor() {
+    super();
     this.jobs = new Map();
   }
 
@@ -14,11 +16,28 @@ class Orchestrator {
   startJob(userId, jobId, params) {
     const containerName = `${userId}_processing_${jobId}`;
     const composeFile = path.join(__dirname, 'worker-compose.yml');
-    const proc = spawn('docker', ['compose', '-f', composeFile, 'run', '--name', containerName, 'worker', ...params]);
+    const args = ['compose', '-f', composeFile, 'run', '--rm', '--name', containerName, 'worker', ...params];
+    const proc = spawn('docker', args);
     this.jobs.set(jobId, proc);
+
+    proc.stdout.on('data', data => {
+      data
+        .toString()
+        .split(/\r?\n/)
+        .forEach(line => {
+          const match = line.match(/PROGRESS\s+(\d+)\s+(\d+)/);
+          if (match) {
+            const current = parseInt(match[1], 10);
+            const total = parseInt(match[2], 10);
+            this.emit('progress', { jobId, current, total });
+          }
+        });
+    });
+
     proc.on('exit', () => {
       this.jobs.delete(jobId);
       this.cleanContainer(containerName);
+      this.emit('done', { jobId });
     });
   }
 

@@ -57,6 +57,7 @@ dataset-harmonizer/
 
 **Frontend**
 
+- Dark theme with orange highlights for a modern look
 - Drag-and-drop ZIP upload
 - Parameter configuration form
 - Live progress via WebSocket or Server-Sent Events (SSE)

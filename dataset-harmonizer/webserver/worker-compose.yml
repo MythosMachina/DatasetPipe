@@ -6,4 +6,6 @@ services:
       - ../uploads:/uploads
       - ../outputs:/outputs
       - ../logs:/logs
+    environment:
+      - PROGRESS=1
     command: ["python", "/app/dataset_harmonizer.py"]
