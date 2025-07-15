@@ -1,0 +1,11 @@
+version: '3'
+services:
+  worker:
+    build: .
+    volumes:
+      - ../../dataset-harmonizer/uploads:/uploads
+      - ../../dataset-harmonizer/outputs:/outputs
+      - ../../dataset-harmonizer/logs:/logs
+    environment:
+      - PROGRESS=1
+    command: ["zip", "-r", "/data/output.zip", "/data"]
