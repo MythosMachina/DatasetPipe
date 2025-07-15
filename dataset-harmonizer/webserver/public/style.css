@@ -5,11 +5,23 @@ body {
   margin: 0;
   padding: 0;
 }
+.layout {
+  display: flex;
+  margin: 20px;
+}
 .container {
   max-width: 600px;
-  margin: 40px auto;
+  margin: 0 auto;
   padding: 20px;
   background: #2b2b2b;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.sidebar {
+  width: 200px;
+  padding: 20px;
+  background: #2b2b2b;
+  margin: 0 10px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
@@ -52,4 +64,26 @@ button:hover {
 }
 .hidden {
   display: none;
+}
+.log {
+  background: #111;
+  padding: 5px;
+  height: 120px;
+  overflow-y: auto;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+.sidebar li {
+  margin-bottom: 5px;
+}
+.sidebar a {
+  color: #ff6600;
+  text-decoration: none;
+}
+.sidebar a:hover {
+  text-decoration: underline;
 }
