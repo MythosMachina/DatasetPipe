@@ -1,0 +1,9 @@
+version: '3'
+services:
+  worker:
+    image: dataset-worker
+    volumes:
+      - ../uploads:/uploads
+      - ../outputs:/outputs
+      - ../logs:/logs
+    command: ["python", "/app/dataset_harmonizer.py"]
