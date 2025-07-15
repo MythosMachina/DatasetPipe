@@ -70,6 +70,10 @@ dataset-harmonizer/
 3. Forward progress to the browser.
 4. Provide the harmonized dataset and logs.
 
+## Deployment
+
+When the server boots, the orchestrator automatically builds the necessary Docker images from the provided `Dockerfile`. Worker containers are then launched on demand through `docker compose`. A session tracker maps containers to user sessions so that multiple jobs can run in parallel and each container can be cleaned up correctly once its job finishes.
+
 ## Technologies
 
 | Area       | Tech                        |

@@ -55,7 +55,9 @@ dataset-harmonizer/
 
 * The **Node.js backend** runs directly on the host and manages user accounts.
 * The **web server** and **frontend** live in a Docker container.
-* Each job spawns a dedicated **worker container**, ensuring per-session isolation.
+* At startup the orchestrator builds the required images from the provided Dockerfiles.
+* Each job spawns a dedicated **worker container** using `docker compose` so that sessions remain isolated.
+* A tracking mechanism records which session owns which container, allowing multiple users to run jobs in parallel.
 * The orchestrator removes containers when processing completes.
 
 ---
