@@ -16,7 +16,8 @@ class Orchestrator extends EventEmitter {
   startJob(userId, jobId, params) {
     const containerName = `${userId}_processing_${jobId}`;
     const composeFile = path.join(__dirname, 'worker-compose.yml');
-    const args = ['compose', '-f', composeFile, 'run', '--rm', '--name', containerName, 'worker', ...params];
+    // run the worker container and let this class handle cleanup
+    const args = ['compose', '-f', composeFile, 'run', '--name', containerName, 'worker', ...params];
     const proc = spawn('docker', args);
     this.jobs.set(jobId, proc);
 
