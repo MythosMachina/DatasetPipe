@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 """Dataset Harmonizer worker.
 
-Placeholder script that will handle dataset cleanup and conversion.
+This script performs basic dataset cleanup and conversion.  It can be run on its
+own or inside the worker container defined in ``Dockerfile`` and
+``worker-compose.yml``.
 """
 
 import argparse
+import logging
+import os
+from pathlib import Path
+
+from PIL import Image, ImageOps
+from tqdm import tqdm
 
 
 def parse_args():
@@ -20,10 +28,68 @@ def parse_args():
     return parser.parse_args()
 
 
+def setup_logging():
+    """Configure log output.
+
+    When executed inside the Docker container the ``/logs`` directory is
+    mounted.  If that directory does not exist we fall back to a ``logs``
+    folder next to this script.
+    """
+
+    log_dir = Path("/logs")
+    if not log_dir.exists():
+        log_dir = Path(__file__).resolve().parent.parent / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    logging.basicConfig(
+        filename=str(log_dir / "harmonizer.log"),
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+    return log_dir
+
+
 def main():
     args = parse_args()
-    # TODO: implement harmonization logic
-    print(f"Processing {args.input_dir} -> {args.output_dir}")
+    log_dir = setup_logging()
+
+    input_path = Path(args.input_dir)
+    output_path = Path(args.output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    images = sorted(
+        [p for p in input_path.rglob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff", ".webp"}]
+    )
+    if not images:
+        logging.warning("No images found in %s", input_path)
+        return
+
+    logging.info("Processing %d images from %s to %s", len(images), input_path, output_path)
+
+    for idx, img_path in enumerate(tqdm(images, desc="harmonizing"), start=1):
+        try:
+            with Image.open(img_path) as im:
+                im.load()
+
+                if args.image_size:
+                    im = im.resize(tuple(args.image_size), Image.LANCZOS)
+                elif args.auto_resize:
+                    w, h = im.size
+                    short = min(w, h)
+                    scale = args.target_short_side / float(short)
+                    im = im.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+
+                if args.padding:
+                    max_side = max(im.size)
+                    im = ImageOps.pad(im, (max_side, max_side), color=(0, 0, 0))
+
+                out_name = f"{args.dataset_name}{idx:04d}.{args.output_format}"
+                out_file = output_path / out_name
+                im.convert("RGB").save(out_file, format=args.output_format.upper())
+        except Exception as exc:  # pylint: disable=broad-except
+            logging.error("Failed processing %s: %s", img_path, exc)
+
+    logging.info("Finished processing %d images", len(images))
+    print(f"Processed {len(images)} images. Logs at {log_dir}")
 
 
 if __name__ == "__main__":
