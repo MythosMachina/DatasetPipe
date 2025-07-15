@@ -70,6 +70,19 @@ dataset-harmonizer/
 3. Forward progress to the browser.
 4. Provide the harmonized dataset and logs.
 
+## User Data Flow
+
+1. Uploaded files are extracted to `uploads/<userId>/`.
+2. Users mark files for processing, creating `uploads/<userId>/<jobId>/` for each job.
+3. The orchestrator launches a worker container named `<userId>_processing_<jobId>` and mounts:
+   - `uploads/<userId>/<jobId>/` as input
+   - `outputs/<userId>/<jobId>/` as output
+   - `logs/<userId>/<jobId>/` for logs
+4. The worker processes the images and writes to the output mount.
+5. After completion the orchestrator stops and removes the container.
+
+This mapping keeps jobs isolated so several users can work in parallel.
+
 ## Deployment
 
 When the server boots, the orchestrator automatically builds the necessary Docker images from the provided `Dockerfile`. Worker containers are then launched on demand through `docker compose`. A session tracker maps containers to user sessions so that multiple jobs can run in parallel and each container can be cleaned up correctly once its job finishes.

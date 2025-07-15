@@ -60,6 +60,18 @@ dataset-harmonizer/
 * A tracking mechanism records which session owns which container, allowing multiple users to run jobs in parallel.
 * The orchestrator removes containers when processing completes.
 
+## Data Flow & Multi-User Setup
+
+1. Uploaded archives are extracted to `uploads/<userId>/`.
+2. Selected files are copied into `uploads/<userId>/<jobId>/`.
+3. The orchestrator starts a container named `<userId>_processing_<jobId>` with mounts:
+   - `uploads/<userId>/<jobId>/` as input
+   - `outputs/<userId>/<jobId>/` as output
+   - `logs/<userId>/<jobId>/` for logs
+4. Processing happens inside the container and results appear in the output mount.
+5. After completion the orchestrator removes the container and updates the job status.
+
+This arrangement lets multiple users run jobs in parallel without interference.
 ---
 
 ## Parameters (CLI & Web)
