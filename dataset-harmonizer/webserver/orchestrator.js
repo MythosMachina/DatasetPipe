@@ -1,6 +1,7 @@
-const { spawn, spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 const path = require('path');
 const EventEmitter = require('events');
+const AdmZip = require('adm-zip');
 
 class Orchestrator extends EventEmitter {
   constructor() {
@@ -47,7 +48,9 @@ class Orchestrator extends EventEmitter {
       const outDir = path.join(__dirname, '..', 'outputs', jobId);
       const zipFile = path.join(__dirname, '..', 'outputs', `${jobId}.zip`);
       try {
-        spawnSync('zip', ['-r', zipFile, '.'], { cwd: outDir });
+        const zip = new AdmZip();
+        zip.addLocalFolder(outDir, '');
+        zip.writeZip(zipFile);
       } catch (err) {
         this.emit('log', { jobId, line: `Failed to zip output: ${err.message}` });
       }
