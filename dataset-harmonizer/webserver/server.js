@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid');
 const routes = require('./routes');
@@ -20,14 +21,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', routes);
 
 const orchestrator = new Orchestrator();
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+const outputsDir = path.join(__dirname, '..', 'outputs');
+let uploadedDatasets = [];
+let finishedDatasets = [];
+const jobFiles = new Map();
 
 app.post('/upload', upload.single('dataset'), (req, res) => {
   const userId = req.session.userId || uuidv4();
   req.session.userId = userId;
 
   const jobId = uuidv4();
+  const datasetName = req.file.originalname;
+  const targetPath = path.join(uploadsDir, datasetName);
+  fs.renameSync(req.file.path, targetPath);
+  uploadedDatasets.push(datasetName);
+
   const args = [
-    `/uploads/${path.basename(req.file.path)}`,
+    `/uploads/${datasetName}`,
     `/outputs/${jobId}`,
     '--dataset_name', req.body.dataset_name || 'dataset',
     '--output_format', req.body.output_format || 'png',
@@ -35,7 +46,8 @@ app.post('/upload', upload.single('dataset'), (req, res) => {
   if (req.body.auto_resize) args.push('--auto_resize');
   if (req.body.padding) args.push('--padding');
 
-  orchestrator.startJob(userId, jobId, args);
+  jobFiles.set(jobId, datasetName);
+  orchestrator.startJob(userId, jobId, datasetName, args);
 
   res.json({ jobId });
 });
@@ -54,17 +66,39 @@ app.get('/progress/:jobId', (req, res) => {
       res.write(`data: ${JSON.stringify({ progress: percent })}\n\n`);
     }
   };
+  const logHandler = info => {
+    if (info.jobId === jobId) {
+      res.write(`data: ${JSON.stringify({ log: info.line })}\n\n`);
+    }
+  };
   const doneHandler = info => {
     if (info.jobId === jobId) {
+      const name = jobFiles.get(info.jobId);
+      if (name) {
+        finishedDatasets.push({ id: info.jobId, name });
+        uploadedDatasets = uploadedDatasets.filter(n => n !== name);
+        jobFiles.delete(info.jobId);
+      }
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
       orchestrator.removeListener('progress', progressHandler);
+      orchestrator.removeListener('log', logHandler);
       orchestrator.removeListener('done', doneHandler);
     }
   };
 
   orchestrator.on('progress', progressHandler);
+  orchestrator.on('log', logHandler);
   orchestrator.on('done', doneHandler);
+});
+
+app.get('/datasets', (req, res) => {
+  res.json({ uploaded: uploadedDatasets, finished: finishedDatasets });
+});
+
+app.get('/download/:jobId', (req, res) => {
+  const zipFile = path.join(outputsDir, `${req.params.jobId}.zip`);
+  res.download(zipFile);
 });
 
 app.listen(3000, () => {

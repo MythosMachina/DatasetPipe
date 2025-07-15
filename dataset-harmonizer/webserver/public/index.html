@@ -7,9 +7,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Dataset Harmonizer</h1>
-    <form id="upload-form">
+  <div class="layout">
+    <div class="sidebar">
+      <h2>Uploaded</h2>
+      <ul id="uploaded-list"></ul>
+    </div>
+    <div class="main container">
+      <h1>Dataset Harmonizer</h1>
+      <form id="upload-form">
       <div class="form-group">
         <label for="dataset">Dataset ZIP</label>
         <input type="file" id="dataset" name="dataset" required>
@@ -27,10 +32,16 @@
         <label><input type="checkbox" id="padding" name="padding"> Padding</label>
       </div>
       <button type="submit">Start Harmonization</button>
-    </form>
-    <div id="progress" class="hidden">
-      <div class="progress-bar"><div class="bar" id="bar"></div></div>
-      <p id="status">Waiting...</p>
+      </form>
+      <div id="progress" class="hidden">
+        <div class="progress-bar"><div class="bar" id="bar"></div></div>
+        <p id="status">Waiting...</p>
+        <pre id="log" class="log"></pre>
+      </div>
+    </div>
+    <div class="sidebar">
+      <h2>Finished</h2>
+      <ul id="finished-list"></ul>
     </div>
   </div>
 <script src="app.js"></script>
