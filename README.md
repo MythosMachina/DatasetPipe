@@ -112,6 +112,10 @@ When the server boots, the orchestrator automatically builds the necessary Docke
 - **Dry-run mode** – test run without modifying data
 - **Multi-threading** (planned)
 
+## Documentation & Change Tracking
+
+- [Consolidated Changelog](CHANGELOG_CONSOLIDATED.md) – chronological digest of every changelog bundled in the repository, kept with the newest updates at the end for quick historical lookup.
+
 ## Dataset Pipe Roadmap
 
 Example Dockerfiles for each processing step are provided under `dataset-pipe/`:
